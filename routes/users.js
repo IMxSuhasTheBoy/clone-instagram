@@ -1,9 +1,22 @@
-var express = require('express');
-var router = express.Router();
+///Docs https://mongoosejs.com/docs/index.html
+const mongoose = require("mongoose");
+const plm = require("passport-local-mongoose");
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+main().catch((err) => console.log(err));
+
+async function main() {
+  await mongoose.connect("mongodb://127.0.0.1:27017/clone-instagram");
+}
+
+const userSchema = mongoose.Schema({
+  username: String,
+  name: String,
+  email: String,
+  password: String,
+  profileImage: String,
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
 });
 
-module.exports = router;
+userSchema.plugin(plm);
+
+module.exports = mongoose.model("user", userSchema);
