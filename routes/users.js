@@ -1,6 +1,6 @@
 ///Docs https://mongoosejs.com/docs/index.html
 const mongoose = require("mongoose");
-const plm = require("passport-local-mongoose");
+const plm = require("passport-local-mongoose"); ///https://www.npmjs.com/package/passport-local-mongoose
 
 main().catch((err) => console.log(err));
 
