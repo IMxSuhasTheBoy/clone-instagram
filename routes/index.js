@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const userModel = require("./users");
+const postModel = require("./post");
 const passport = require("passport"); ///https://www.npmjs.com/package/passport
 const localStrategy = require("passport-local"); ///https://www.npmjs.com/package/passport-local
 const upload = require("./multer");
@@ -15,13 +16,15 @@ router.get("/login", function (req, res) {
   res.render("login", { footer: false });
 });
 
-router.get("/feed", isLoggedIn, function (req, res) {
-  res.render("feed", { footer: true });
+router.get("/feed", isLoggedIn, async (req, res) => {
+  const posts = await postModel.find().populate("user");
+  // console.log(posts);
+  res.render("feed", { footer: true, posts });
 });
 
 router.get("/profile", isLoggedIn, async (req, res) => {
-  const user = await userModel.findOne({ username: req.session.passport.user });
-
+  const user = await userModel.findOne({ username: req.session.passport.user }).populate("posts")
+console.log(user);
   res.render("profile", { footer: true, user });
 });
 
@@ -31,6 +34,7 @@ router.get("/search", isLoggedIn, function (req, res) {
 
 router.get("/edit", isLoggedIn, async (req, res) => {
   const user = await userModel.findOne({ username: req.session.passport.user });
+  // console.log(user, "edit route");
   res.render("edit", { footer: true, user });
 });
 
@@ -55,11 +59,25 @@ router.post("/register", (req, res) => {
 router.post(
   "/login",
   passport.authenticate("local", {
-    successRedirect: "profile",
-    failureRedirect: "/",
+    successRedirect: "/profile",
+    failureRedirect: "/login",
   }),
   (req, res) => {}
 );
+
+router.post("/upload", isLoggedIn, upload.single("image"), async (req, res) => {
+  const user = await userModel.findOne({ username: req.session.passport.user });
+  const post = await postModel.create({
+    picture: req.file.filename,
+    user: user._id,
+    caption: req.body.caption,
+  });
+
+  user.posts.push(post._id);
+  console.log(post, "post route /upload");
+  await user.save();
+  res.redirect("/feed");
+});
 
 ///Docs https://www.passportjs.org/tutorials/auth0/logout/
 router.get("/logout", (req, res, next) => {
@@ -82,6 +100,7 @@ router.post("/update", upload.single("image"), async (req, res) => {
     user.profileImage = req.file.filename;
   }
   await user.save();
+  // console.log(user, "update route");
   res.redirect("/profile");
 });
 

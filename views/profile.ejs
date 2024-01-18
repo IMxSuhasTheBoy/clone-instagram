@@ -18,11 +18,11 @@
           </div>
           <div class="flex flex-col items-center justify-center">
             <h3>322</h3>
-            <h4>Posts</h4>
+            <h4>followers</h4>
           </div>
           <div class="flex flex-col items-center justify-center">
             <h3>322</h3>
-            <h4>Posts</h4>
+            <h4>Following</h4>
           </div>
         </div>
       </div>
@@ -33,13 +33,20 @@
       <div class="px-6 mt-5">
         <a class="px-3 py-2 bg-zinc-800 text-xs rounded-md" href="/edit">Edit Profile</a>
       </div>
-      <div class="posts w-full flex justify-between gap-1 py-2 mt-5 flex-wrap">
+      <div class="posts w-full flex gap-1 py-2 mt-5 flex-wrap">
+        <% user.posts.forEach((post) => { %>
+         
+          <div class="post w-[32.5%] h-32 bg-sky-100 overflow-hidden">
+            <img class="w-full h-full object-cover" src="/images/uploads/<%= post.picture %>" alt="">
+          </div>
+
+        <% }) %>
+
+        <!-- <div class="post w-[32.5%] h-32 bg-sky-100"></div>
         <div class="post w-[32.5%] h-32 bg-sky-100"></div>
         <div class="post w-[32.5%] h-32 bg-sky-100"></div>
         <div class="post w-[32.5%] h-32 bg-sky-100"></div>
-        <div class="post w-[32.5%] h-32 bg-sky-100"></div>
-        <div class="post w-[32.5%] h-32 bg-sky-100"></div>
-        <div class="post w-[32.5%] h-32 bg-sky-100"></div>
+        <div class="post w-[32.5%] h-32 bg-sky-100"></div> -->
       </div>
   </div>
 <% include ./partials/footer.ejs %>
