@@ -6,6 +6,9 @@ const passport = require("passport"); ///https://www.npmjs.com/package/passport
 const localStrategy = require("passport-local"); ///https://www.npmjs.com/package/passport-local
 const upload = require("./multer");
 
+
+
+
 passport.use(new localStrategy(userModel.authenticate()));
 
 router.get("/", function (req, res) {
@@ -23,8 +26,10 @@ router.get("/feed", isLoggedIn, async (req, res) => {
 });
 
 router.get("/profile", isLoggedIn, async (req, res) => {
-  const user = await userModel.findOne({ username: req.session.passport.user }).populate("posts")
-console.log(user);
+  const user = await userModel
+    .findOne({ username: req.session.passport.user })
+    .populate("posts");
+  // console.log(user);
   res.render("profile", { footer: true, user });
 });
 
@@ -36,6 +41,15 @@ router.get("/edit", isLoggedIn, async (req, res) => {
   const user = await userModel.findOne({ username: req.session.passport.user });
   // console.log(user, "edit route");
   res.render("edit", { footer: true, user });
+});
+
+router.get("/username/:username", isLoggedIn, async (req, res) => {
+  // Dynamically create a regex based on the value of variable/req parameter
+  const searchRegex = new RegExp(`^${req.params.username}`, "i");
+  // search in DB
+  const users = await userModel.find({ username: searchRegex });
+  console.log(users, "serach")
+  res.json(users);
 });
 
 router.get("/upload", isLoggedIn, function (req, res) {
